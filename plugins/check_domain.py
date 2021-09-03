@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import subprocess
@@ -25,38 +25,38 @@ def return_date_from_whois_cz(domena_cz):
     try:
         command_whois_cz = 'whois ' + domena_cz + ' | grep "expire:" | awk -F"expire:" \'{print $2}\' '
         vysledok = subprocess.check_output(command_whois_cz, shell=True)
-        vysledok = str(vysledok)        #konvertujeme vysledok do stringu
-        vysledok = vysledok.strip()     #odstranime vsetky biele znaky
+        vysledok = vysledok.decode("utf-8")        #konvertujeme vysledok do stringu
+        vysledok = vysledok.strip()                #odstranime vsetky biele znaky
         return vysledok
     except:
-        print "ERROR: domain is probably not in whois database or expire date not found"
+        print("ERROR: domain is probably not in whois database or expire date not found")
         sys.exit(return_code_3)
 
 def return_date_from_whois_sk(domena_sk):
     try:
-        command_whois_sk = 'whois ' + domena_sk + ' | grep "Valid-date" | awk -F"Valid-date" \'{print $2}\' '
+        command_whois_sk = 'whois ' + domena_sk + ' | grep "Valid Until" | awk -F"Valid Until:" \'{print $2}\' ' 
         vysledok = subprocess.check_output(command_whois_sk, shell=True)
-        vysledok = str(vysledok)        #konvertujeme vysledok do stringu
-        vysledok = vysledok.strip()     #odstranime vsetky biele znaky
+        vysledok = vysledok.decode("utf-8")        #konvertujeme vysledok do stringu
+        vysledok = vysledok.strip()                #odstranime vsetky biele znaky
         return vysledok
     except:
-        print "ERROR: domain is probably not in whois database or expire date not found"
+        print("ERROR: domain is probably not in whois database or expire date not found")
         sys.exit(return_code_3)
 
 def return_date_from_whois_org(domena):
     try:
         command_whois = 'whois ' + domena + ' | grep "Registry Expiry Date:"| awk -F"Date:" \'{print $2}\' | cut -f 1 '
         vysledok = subprocess.check_output(command_whois, shell=True)
-        vysledok = str(vysledok)        #konvertujeme vysledok do stringu
-        vysledok = vysledok.strip()     #odstranime vsetky biele znaky
-        if ('\n') in vysledok:          #zistime ci vo vysledku existuje dalsi riadok
+        vysledok = vysledok.decode("utf-8")        #konvertujeme vysledok do stringu
+        vysledok = vysledok.strip()                #odstranime vsetky biele znaky
+        if ('\n') in vysledok:                     #zistime ci vo vysledku existuje dalsi riadok
             index_new_line = vysledok.index('\n')
             vysledok = vysledok[:index_new_line]
             return vysledok
         else:
             return vysledok
     except:
-        print "ERROR: domain is probably not in whois database or expire date not found"
+        print("ERROR: domain is probably not in whois database or expire date not found")
         sys.exit(return_code_3)
 
 def return_date_from_whois_generic(domena):
@@ -72,7 +72,7 @@ def return_date_from_whois_generic(domena):
         else:
             return vysledok
     except:
-        print "ERROR: domain is probably not in whois database or expire date not found"
+        print("ERROR: domain is probably not in whois database or expire date not found")
         sys.exit(return_code_3)
 
 def days_to_expire_domain_cz(date_in_format_D_M_Y):     #vrati pocet dni do expiracie-datum expiracie je vo formate napr. 29.10.2018
@@ -125,7 +125,7 @@ def return_date_for_domain(domain):
         expire_date = return_date_from_whois_org(domain)
         return [expire_date, days_to_expire_domain_generic(expire_date)]                #vraciame list, v ktorom je na pozicii 0 datum a na pozicii 1 pocet dni do expiracie
     else:
-        print "domain name " + domain + " is not supported"
+        print("domain name " + domain + " is not supported")
         sys.exit(return_code_3) 
 
 def print_return_code(domain):
@@ -134,18 +134,18 @@ def print_return_code(domain):
         expir_days = return_date_for_domain(domain)[1]
         expir_code = int(return_code(expir_days))
         if expir_code == return_code_0:
-            print 'domain {0} is OK and is valid until {1} (expires in {2} days)|days={3};{4};{5};;'.format(domain, expir_date, expir_days, expir_days, results.warning, results.critical)
+            print('domain {0} is OK and is valid until {1} (expires in {2} days)|days={3};{4};{5};;'.format(domain, expir_date, expir_days, expir_days, results.warning, results.critical))
             return return_code_0
         elif expir_code == return_code_1:
-            print 'domain {0} is WARNING and is valid until {1} (expires in {2} days)|days={3};{4};{5};;'.format(domain, expir_date, expir_days, expir_days, results.warning, results.critical)
+            print('domain {0} is WARNING and is valid until {1} (expires in {2} days)|days={3};{4};{5};;'.format(domain, expir_date, expir_days, expir_days, results.warning, results.critical))
             return return_code_1
         elif expir_code == return_code_2:
-            print 'domain {0} is CRITICAL and is valid until {1} (expires in {2} days)|days={3};{4};{5};;'.format(domain, expir_date, expir_days, expir_days, results.warning, results.critical)
+            print('domain {0} is CRITICAL and is valid until {1} (expires in {2} days)|days={3};{4};{5};;'.format(domain, expir_date, expir_days, expir_days, results.warning, results.critical))
             return return_code_2
         else:
             return return_code_3
     except:
-        print "Unknown Error"
+        print("Unknown Error")
         return return_code_3
 
 
