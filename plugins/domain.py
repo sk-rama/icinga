@@ -37,14 +37,6 @@ def handle_sigalrm(signum, frame, timeout=None):
     sys.exit(3)
 
 
-def plugin_output(domain, plugin_exit, date_string, days, warning, critical):
-    if plugin_exit != 3:
-        print(f"{return_code[plugin_exit][1]}: domain {domain} is {return_code[plugin_exit][1]} and is valid until {date_string} (expires in {days} days)|'days'={days}d;{warning};{critical};;")
-        sys.exit(return_code[plugin_exit][0])
-    else:
-        print(f'UNKNOWN: domain {domain} is UNKNOWN in whois database')
-        sys.exit(3)
-
 
 def days_to_expire(days: datetime):
     if days is not None:
